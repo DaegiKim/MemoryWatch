@@ -1,0 +1,118 @@
+div.chat-wrapper {
+    color: #ddd;
+    padding: 1em 1em 1em 1em;
+    margin-bottom: 8em;
+    border: 32px solid rgba(200,200,200,.5);
+    border-radius: 16px;
+    background-color: rgba(255,255,255,.95);
+}
+div.chat-inner-wrapper {
+    min-height: 400px;
+    position: relative;
+    overflow: hidden;
+}
+#onError, #onChat {
+    display: none;
+}
+
+#messages {
+    color: #202020;
+    text-align: left;
+    position: absolute;
+    width: 100%;
+    bottom: 2em;
+    margin-bottom: 1em;
+}
+
+#talk {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    border: 1px solid darkorange;
+    background-color: transparent;
+    padding: .5em .5em .5em .5em;
+    color: #202020;
+}
+#talk:focus {
+    outline: none;
+}
+
+.message {
+    color: #ddd;
+    padding: 4px 0;
+    position: relative;
+    border-bottom: 1px solid #ddd;
+}
+
+.message span {
+    width: 70px;
+    overflow: hidden;
+    text-align: left;
+    font-weight: bold;
+    display: inline-block;
+    vertical-align: top;
+    position: relative;
+    margin-right: .5em;
+    margin-left: .5em;
+}
+
+.message p {
+    display: inline-block;
+    margin: 0;
+}
+
+.message.me {
+    color: lightseagreen;
+}
+
+.message.join, .message.quit {
+    color: lightsalmon;
+}
+#messages {
+    top: 0 !important;
+}
+.alert {
+    top: 0px;
+    right: 0px;
+    background-color: black;
+    color: #ddd;
+    padding: 1em 1em;
+}
+#girls-generation-1, #flower-1, #leesora-1, #psy-1 {
+    display: none;
+}
+video.bg-video {
+    position: fixed; right: 0; bottom: 0;
+    min-width: 100%; min-height: 100%;
+    width: auto; height: auto; z-index: -100;
+    background-size: cover;
+}
+div.concert {
+    background-color: rgba(0,0,0,.5);
+    color: white;
+    padding: 1em 1em;
+    border-radius: 5px;
+}
+div.concert .item {
+    padding: 1em 1em;
+}
+div.concert .item:hover {
+    background-color: rgba(255,255,255,.75);
+    color: #000000;
+    cursor: pointer;
+}
+div.concert span.glyphicon-star {
+    color: crimson;
+}
+div.replay {
+    padding: 1em 1em;
+    margin-bottom: 1em;
+    background-color: rgba(0,0,0,.75);
+    color: #ffffff;
+}
+div.replay:hover {
+    background-color: crimson;
+    color: #ffffff;
+    cursor: pointer;
+}
