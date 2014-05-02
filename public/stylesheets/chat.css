@@ -1,7 +1,7 @@
 div.chat-wrapper {
     color: #ddd;
     padding: 1em 1em 1em 1em;
-    margin-bottom: 8em;
+    margin-bottom: 14em;
     border: 32px solid rgba(200,200,200,.5);
     border-radius: 16px;
     background-color: rgba(255,255,255,.95);
@@ -39,7 +39,7 @@ div.chat-inner-wrapper {
 }
 
 .message {
-    color: #ddd;
+    color: #202020;
     padding: 4px 0;
     position: relative;
     border-bottom: 1px solid #ddd;
@@ -79,15 +79,6 @@ div.chat-inner-wrapper {
     color: #ddd;
     padding: 1em 1em;
 }
-#girls-generation-1, #flower-1, #leesora-1, #psy-1 {
-    display: none;
-}
-video.bg-video {
-    position: fixed; right: 0; bottom: 0;
-    min-width: 100%; min-height: 100%;
-    width: auto; height: auto; z-index: -100;
-    background-size: cover;
-}
 div.concert {
     background-color: rgba(0,0,0,.5);
     color: white;
@@ -115,4 +106,52 @@ div.replay:hover {
     background-color: crimson;
     color: #ffffff;
     cursor: pointer;
+}
+.recommendation {
+    display: none;
+}
+video.bg-video, img.cover {
+    position: fixed; right: 0; bottom: 0;
+    min-width: 100%; min-height: 100%;
+    width: auto; height: auto; z-index: -100;
+    background-size: cover;
+}
+div#singer div.row {
+    margin-bottom: 2em;
+}
+div.profile {
+    color: #ddd;
+    font-size: 1.2em;
+}
+#part-time-job .item {
+    padding: 1em 1em;
+}
+#part-time-job .item:hover {
+    background-color: crimson;
+    color: #ffffff;
+    cursor: pointer;
+}
+#part-time-job .item .title {
+    font-size: 1.2em;
+}
+#usa-1 .description {
+    color: #fff;
+    background-color: rgba(0,0,0,.85);
+    padding: 1em 1em;
+}
+div.plane, div.hotel {
+    background-color: rgba(0,0,0,.85);
+    color: #ddd;
+    padding: 1em 1em;
+    border-radius: 5px;
+}
+div.plane .item, div.hotel .item {
+    margin: 1em 1em;
+}
+div.book .title {
+    font-size: 2em;
+}
+div.book .star {
+    color: darkorange;
+    font-size: 1.5em;
 }

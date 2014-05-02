@@ -19,10 +19,8 @@
                 </div>
             </div>
         </div>
-        @concept.girlsgeneration1(username)
-        @concept.leesora1(username)
-        @concept.flower1(username)
-        @concept.psy1(username)
+        @concept.scenario1(username)
+        @concept.scenario2(username)
     </div>
 
     <script type="text/javascript" charset="utf-8">
@@ -62,49 +60,14 @@
 
             // Create the message element
             if(data.kind == 'alert') {
-                if(data.message == 'girlsgeneration1') {
-                    $('#psy-1-video' ).get(0).pause();
-                    $('#psy-1' ).css('display', 'none');
-                    $('#flower-1-video' ).get(0).pause();
-                    $('#flower-1' ).css('display', 'none');
-                    $('#leesora-1-video' ).get(0).pause();
-                    $('#leesora-1' ).css('display', 'none');
+                $('.recommendation' ).css('display', 'none');
+                $('#'+data.message).fadeIn(500);
 
-                    $('#girls-generation-1' ).fadeIn(500);
-                    $('#girls-generation-1-video' ).get(0).play();
-                }
-                else if(data.message == 'leesora1') {
-                    $('#psy-1-video' ).get(0).pause();
-                    $('#psy-1' ).css('display', 'none');
-                    $('#flower-1-video' ).get(0).pause();
-                    $('#flower-1' ).css('display', 'none');
-                    $('#girls-generation-1-video' ).get(0).pause();
-                    $('#girls-generation-1' ).css('display', 'none');
-
-                    $('#leesora-1' ).fadeIn(500);
-                    $('#leesora-1-video' ).get(0).play();
-                }
-                else if(data.message == 'flower1') {
-                    $('#psy-1-video' ).get(0).pause();
-                    $('#psy-1' ).css('display', 'none');
-                    $('#girls-generation-1-video' ).get(0).pause();
-                    $('#girls-generation-1' ).css('display', 'none');
-                    $('#leesora-1-video' ).get(0).pause();
-                    $('#leesora-1' ).css('display', 'none');
-
-                    $('#flower-1' ).fadeIn(500);
-                    $('#flower-1-video' ).get(0).play();
-                }
-                else if(data.message == 'psy1') {
-                    $('#flower-1-video' ).get(0).pause();
-                    $('#flower-1' ).css('display', 'none');
-                    $('#girls-generation-1-video' ).get(0).pause();
-                    $('#girls-generation-1' ).css('display', 'none');
-                    $('#leesora-1-video' ).get(0).pause();
-                    $('#leesora-1' ).css('display', 'none');
-
-                    $('#psy-1' ).fadeIn(500);
-                    $('#psy-1-video' ).get(0).play();
+                if(data.video = true) {
+                    $('div.recommendation > video.bg-video' ).each(function(index, value){
+                        $(this ).get(0 ).pause();
+                    });
+                    $('div#'+data.message+' > video.bg-video' ).get(0 ).play();
                 }
             }
             else {

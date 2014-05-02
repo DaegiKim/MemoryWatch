@@ -118,18 +118,45 @@ public class ChatRoom extends UntypedActor {
 
     private void analysisMessage(Talk talk) {
         String message = "";
+        Boolean video = false;
 
-        if(talk.text.contains("소녀시대") && talk.text.contains("콘서트")) {
-            message = "girlsgeneration1";
+        if(talk.text.contains("아르바이트")) {
+            message = "part-time-job";
         }
-        else if(talk.text.contains("이소라") && talk.text.contains("콘서트")) {
-            message = "leesora1";
+        else if(talk.text.contains("랄라스윗") || talk.text.contains("제이래빗") || talk.text.contains("소란")) {
+            message = "singer";
+            video = true;
         }
-        else if(talk.text.contains("꽃보다") && talk.text.contains("할배")) {
-            message = "flower1";
+        else if(talk.text.contains("미국")) {
+            message = "usa-1";
         }
-        else if(talk.text.contains("싸이") && talk.text.contains("강남스타일")) {
-            message = "psy1";
+        else if(talk.text.contains("뉴욕") && talk.text.contains("LA")) {
+            message = "usa-2";
+        }
+        else if(talk.text.contains("소녀시대") && talk.text.contains("콘서트")) {
+            message = "girls-generation";
+            video = true;
+        }
+        else if(talk.text.contains("워싱턴 DC") && talk.text.contains("백악관")) {
+            message = "usa-3";
+        }
+        else if(talk.text.contains("유럽") && talk.text.contains("15박 16일")) {
+            message = "europe-1";
+        }
+        else if(talk.text.contains("대관람차") && talk.text.contains("빅벤")) {
+            message = "europe-2";
+        }
+        else if(talk.text.contains("오스트리아") && talk.text.contains("쉔부른")) {
+            message = "europe-3";
+        }
+        else if(talk.text.contains("프랑스") && talk.text.contains("루브르")) {
+            message = "europe-4";
+        }
+        else if(talk.text.contains("스위스") && talk.text.contains("융프라우")) {
+            message = "europe-5";
+        }
+        else if(talk.text.contains("코스북")) {
+            message = "europe-6";
         }
         else {
             return;
@@ -140,6 +167,7 @@ public class ChatRoom extends UntypedActor {
             event.put("kind", "alert");
             event.put("user", talk.username);
             event.put("message", message);
+            event.put("video", video);
 
             channel.write(event);
         }
