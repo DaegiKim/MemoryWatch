@@ -125,7 +125,6 @@ public class ChatRoom extends UntypedActor {
         }
         else if(talk.text.contains("랄라스윗") || talk.text.contains("제이래빗") || talk.text.contains("소란")) {
             message = "singer";
-            video = true;
         }
         else if(talk.text.contains("미국")) {
             message = "usa-1";
