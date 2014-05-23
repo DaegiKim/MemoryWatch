@@ -9,6 +9,7 @@ object ApplicationBuild extends Build {
 
   val appDependencies = Seq(
     // Add your project dependencies here,
+    "org.scala-tools" % "scala-stm_2.9.1" % "0.3",
     javaCore,
     javaJdbc,
     javaEbean

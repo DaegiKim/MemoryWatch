@@ -8,19 +8,37 @@
             <div class="pull-right"><span class="glyphicon glyphicon-user"></span><span id="user-count"></span></div>
             <div class="clearfix"></div>
         </div>
-        <div class="chat-wrapper col-sm-4">
-            <div id="onError" class="alert-message error">
-                <p><strong>Oops!</strong><span></span></p>
-            </div>
-            <div id="onChat">
-                <div class="chat-inner-wrapper">
-                    <div id="messages"></div>
-                    <input type="text" id="talk" placeholder="여기에 글을 입력하세요" autofocus="on"/>
+        <div class="row">
+            <div class="col-sm-4">
+                <div class="chat-wrapper">
+                    <div id="onError" class="alert-message error">
+                        <p><strong>Oops!</strong><span></span></p>
+                    </div>
+                    <div id="onChat">
+                        <div class="chat-inner-wrapper">
+                            <div id="messages"></div>
+                            <input type="text" id="talk" placeholder="여기에 글을 입력하세요" autofocus="on"/>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel panel-info" id="komoran">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">형태소 분석 결과</h3>
+                    </div>
+                    <div class="panel-body">
+                    </div>
+                </div>
+                <div class="panel panel-info" id="twitter">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">트위터</h3>
+                    </div>
+                    <div class="panel-body">
+                    </div>
                 </div>
             </div>
+            @concept.scenario1(username)
+            @concept.scenario2(username)
         </div>
-        @concept.scenario1(username)
-        @concept.scenario2(username)
     </div>
 
     <script type="text/javascript" charset="utf-8">
@@ -69,6 +87,13 @@
                     });
                     $('div#'+data.message+' > video.bg-video' ).get(0 ).play();
                 }
+            }
+            else if (data.kind == 'komoran') {
+                $('#komoran .panel-body' ).text(data.message);
+            }
+            else if (data.kind == 'twitter') {
+                $('#twitter .panel-body' ).text(data.message);
+                console.log(data);
             }
             else {
                 var el = $('<div class="message"><span></span><p></p></div>')

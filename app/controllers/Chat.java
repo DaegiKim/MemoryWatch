@@ -1,15 +1,22 @@
 package controllers;
 
+import kr.co.shineware.nlp.komoran.core.MorphologyAnalyzer;
 import models.chat.ChatRoom;
 import org.codehaus.jackson.JsonNode;
 import play.Logger;
 import play.mvc.Controller;
 import play.mvc.Result;
 import play.mvc.WebSocket;
+import twitter4j.Twitter;
+import twitter4j.TwitterException;
+import twitter4j.TwitterFactory;
+import twitter4j.conf.ConfigurationBuilder;
 import views.html.chat.chatRoom;
 import views.html.chat.index;
 
 public class Chat extends Controller {
+    public static MorphologyAnalyzer analyzer = new MorphologyAnalyzer("data/");
+
     /**
      * Display the home page.
      */

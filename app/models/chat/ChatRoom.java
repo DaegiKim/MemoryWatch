@@ -3,17 +3,29 @@ package models.chat;
 import akka.actor.ActorRef;
 import akka.actor.Props;
 import akka.actor.UntypedActor;
+import controllers.Chat;
+import kr.co.shineware.nlp.komoran.core.MorphologyAnalyzer;
+import kr.co.shineware.util.common.model.Pair;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.node.ArrayNode;
 import org.codehaus.jackson.node.ObjectNode;
+import play.Logger;
 import play.libs.Akka;
 import play.libs.F;
 import play.libs.Json;
 import play.mvc.WebSocket;
 import scala.concurrent.Await;
 import scala.concurrent.duration.Duration;
+import twitter4j.*;
+import twitter4j.auth.AccessToken;
+import twitter4j.auth.RequestToken;
+import twitter4j.conf.ConfigurationBuilder;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static akka.pattern.Patterns.ask;
@@ -100,6 +112,8 @@ public class ChatRoom extends UntypedActor {
 
             notifyAll("talk", talk.username, talk.text);
             analysisMessage(talk);
+            komoran(talk);
+            twitter(talk);
 
         } else if(message instanceof Quit)  {
 
@@ -114,6 +128,59 @@ public class ChatRoom extends UntypedActor {
             unhandled(message);
         }
 
+    }
+
+    private void twitter(Talk talk) {
+        List<String> twits = new ArrayList<String>();
+
+        ObjectNode event = Json.newObject();
+        event.put("kind", "twitter");
+
+        ConfigurationBuilder cb = new ConfigurationBuilder();
+        cb.setDebugEnabled(true)
+                .setOAuthConsumerKey("1tj6RfxgtAeMRXJBPVqObA")
+                .setOAuthConsumerSecret("jyj5jbVtj2yThy6lk5UbD7DpOXs1NLGxyju5rOn2DY")
+                .setOAuthAccessToken("1689174836-UQ3T7Gb5lJVlYlAVxLPl6H8t4jgD3c97DfBwLJj")
+                .setOAuthAccessTokenSecret("SVmUs1lBElCwR3NahWIhP0iOkhIeT4xqGTAuNYhYgoU");
+        TwitterFactory tf = new TwitterFactory(cb.build());
+        Twitter twitter = tf.getInstance();
+
+        Query query = new Query(talk.text);
+        QueryResult queryResult = null;
+        try {
+            queryResult = twitter.search(query);
+        } catch (TwitterException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+        for (Status status : queryResult.getTweets()) {
+            Logger.debug("@" + status.getUser().getScreenName() + ":" + status.getText());
+            twits.add("@" + status.getUser().getScreenName() + ":" + status.getText());
+        }
+
+        for(WebSocket.Out<JsonNode> channel: members.values()) {
+            channel.write(event);
+            event.put("message", "@" + twits);
+        }
+    }
+
+    private void komoran(Talk talk) {
+        String text = "";
+        List<List<Pair<String,String>>> result = Chat.analyzer.analyze(talk.text);
+
+        for (List<Pair<String, String>> eojeolResult : result) {
+            for (Pair<String, String> wordMorph : eojeolResult) {
+                Logger.debug(wordMorph.toString());
+                text+=wordMorph.toString();
+            }
+        }
+
+        for(WebSocket.Out<JsonNode> channel: members.values()) {
+            ObjectNode event = Json.newObject();
+            event.put("kind", "komoran");
+            event.put("message", text);
+
+            channel.write(event);
+        }
     }
 
     private void analysisMessage(Talk talk) {

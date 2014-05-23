@@ -4,6 +4,7 @@
 
 # Home page
 GET        /                    controllers.Home.index()
+GET        /upload              controllers.Home.upload()
 
 GET        /chat                controllers.Chat.index
 GET        /chat/room           controllers.Chat.chatRoom(u: String ?= null)
