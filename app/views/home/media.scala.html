@@ -1,0 +1,23 @@
+@main("MemoryWatch") {
+    @header("media")
+    <!-- Begin page content -->
+    <div class="container">
+        <div class="page-header">
+            <h1>MemoryWatch</h1>
+        </div>
+        <table class="table">
+            <tr>
+                <th>id</th>
+                <th>keyword</th>
+                <th>contents</th>
+            </tr>
+        @for(m <- Media.all()) {
+            <tr>
+                <td>@m.id</td>
+                <td>@m.keyword</td>
+                <td><img src="@routes.Home.contents(m.id)" class="img-rounded media"/></td>
+            </tr>
+        }
+        </table>
+    </div>
+}

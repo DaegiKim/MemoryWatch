@@ -45,3 +45,7 @@ div.alert-iSX {
     display: inline-block;
     float: right;
 }
+
+img.media {
+    max-height: 32px;
+}

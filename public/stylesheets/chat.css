@@ -3,7 +3,6 @@ div.chat-wrapper {
     padding: 1em 1em 1em 1em;
     border: 1px solid #ddd;
     background-color: rgba(255,255,255,.95);
-    border-radius: 5px;
 }
 div.chat-inner-wrapper {
     min-height: 400px;
@@ -28,7 +27,7 @@ div.chat-inner-wrapper {
     bottom: 0;
     left: 0;
     width: 100%;
-    border: 1px solid darkorange;
+    border: 1px solid #ddd;
     background-color: transparent;
     padding: .5em .5em .5em .5em;
     color: #202020;
@@ -41,7 +40,7 @@ div.chat-inner-wrapper {
     color: #202020;
     padding: 4px 0;
     position: relative;
-    border-bottom: 1px solid #ddd;
+    /*border-bottom: 1px solid #ddd;*/
 }
 
 .message span {
@@ -62,11 +61,11 @@ div.chat-inner-wrapper {
 }
 
 .message.me {
-    color: lightseagreen;
+    color: crimson;
 }
 
 .message.join, .message.quit {
-    color: lightsalmon;
+    color: #202030;
 }
 #messages {
     top: 0 !important;

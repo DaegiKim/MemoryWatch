@@ -17,6 +17,8 @@
                 @if(page.toLowerCase()!="home") {<li><a href="@routes.Home.index()">Home</a></li>}
                 @if(page.toLowerCase()=="upload") {<li class="active"><a href="@routes.Home.upload()">Upload</a></li>}
                 @if(page.toLowerCase()!="upload") {<li><a href="@routes.Home.upload()">Upload</a></li>}
+                @if(page.toLowerCase()=="media") {<li class="active"><a href="@routes.Home.media()">Media</a></li>}
+                @if(page.toLowerCase()!="media") {<li><a href="@routes.Home.media()">Media</a></li>}
                 @if(page.toLowerCase()=="demo") {<li class="active"><a href="@routes.Chat.index()">Demo</a></li>}
                 @if(page.toLowerCase()!="demo") {<li><a href="@routes.Chat.index()">Demo</a></li>}
             </ul>

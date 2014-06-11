@@ -3,12 +3,15 @@
 # ~~~~
 
 # Home page
-GET        /                    controllers.Home.index()
-GET        /upload              controllers.Home.upload()
+GET         /                    controllers.Home.index()
+GET         /upload              controllers.Home.upload()
+POST        /upload              controllers.Home.save()
+GET         /media               controllers.Home.media()
+GET         /media/contents/:id  controllers.Home.contents(id:  String)
 
-GET        /chat                controllers.Chat.index
-GET        /chat/room           controllers.Chat.chatRoom(u: String ?= null)
-GET        /chat/join           controllers.Chat.chat(u)
+GET         /chat                controllers.Chat.index
+GET         /chat/room           controllers.Chat.chatRoom(u: String ?= null)
+GET         /chat/join           controllers.Chat.chat(u)
 
 # Map static resources from the /public folder to the /assets URL path
-GET        /assets/*file        controllers.Assets.at(path="/public", file)
+GET         /assets/*file        controllers.Assets.at(path="/public", file)
