@@ -3,12 +3,15 @@ package models.chat;
 import akka.actor.ActorRef;
 import akka.actor.Props;
 import akka.actor.UntypedActor;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import controllers.Chat;
-import kr.co.shineware.nlp.komoran.core.MorphologyAnalyzer;
 import kr.co.shineware.util.common.model.Pair;
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.node.ArrayNode;
-import org.codehaus.jackson.node.ObjectNode;
+import org.apache.http.*;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.DefaultHttpClient;
 import play.Logger;
 import play.libs.Akka;
 import play.libs.F;
@@ -17,13 +20,11 @@ import play.mvc.WebSocket;
 import scala.concurrent.Await;
 import scala.concurrent.duration.Duration;
 import twitter4j.*;
-import twitter4j.auth.AccessToken;
-import twitter4j.auth.RequestToken;
-import twitter4j.conf.ConfigurationBuilder;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
+import java.io.*;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -58,7 +59,7 @@ public class ChatRoom extends UntypedActor {
                 public void invoke(JsonNode event) {
 
                     // Send a Talk message to the room.
-                    defaultRoom.tell(new Talk(username, event.get("text").asText()));
+                    defaultRoom.tell(new Talk(username, event.get("text").asText()), null);
 
                 }
             });
@@ -68,7 +69,7 @@ public class ChatRoom extends UntypedActor {
                 public void invoke() {
 
                     // Send a Quit message to the room.
-                    defaultRoom.tell(new Quit(username));
+                    defaultRoom.tell(new Quit(username), null);
 
                 }
             });
@@ -98,11 +99,11 @@ public class ChatRoom extends UntypedActor {
 
             // Check if this username is free.
             if(members.containsKey(join.username)) {
-                getSender().tell("이미 사용중인 닉네임입니다");
+                getSender().tell("이미 사용중인 닉네임입니다", getSelf());
             } else {
                 members.put(join.username, join.channel);
                 notifyAll("join", join.username, "입장하였습니다");
-                getSender().tell("OK");
+                getSender().tell("OK", getSelf());
             }
 
         } else if(message instanceof Talk)  {
@@ -113,7 +114,6 @@ public class ChatRoom extends UntypedActor {
             notifyAll("talk", talk.username, talk.text);
             analysisMessage(talk);
             komoran(talk);
-            twitter(talk);
 
         } else if(message instanceof Quit)  {
 
@@ -130,46 +130,12 @@ public class ChatRoom extends UntypedActor {
 
     }
 
-    private void twitter(Talk talk) {
-        List<String> twits = new ArrayList<String>();
-
-        ObjectNode event = Json.newObject();
-        event.put("kind", "twitter");
-
-        ConfigurationBuilder cb = new ConfigurationBuilder();
-        cb.setDebugEnabled(true)
-                .setOAuthConsumerKey("1tj6RfxgtAeMRXJBPVqObA")
-                .setOAuthConsumerSecret("jyj5jbVtj2yThy6lk5UbD7DpOXs1NLGxyju5rOn2DY")
-                .setOAuthAccessToken("1689174836-UQ3T7Gb5lJVlYlAVxLPl6H8t4jgD3c97DfBwLJj")
-                .setOAuthAccessTokenSecret("SVmUs1lBElCwR3NahWIhP0iOkhIeT4xqGTAuNYhYgoU");
-        TwitterFactory tf = new TwitterFactory(cb.build());
-        Twitter twitter = tf.getInstance();
-
-        Query query = new Query(talk.text);
-        QueryResult queryResult = null;
-        try {
-            queryResult = twitter.search(query);
-        } catch (TwitterException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        }
-        for (Status status : queryResult.getTweets()) {
-            Logger.debug("@" + status.getUser().getScreenName() + ":" + status.getText());
-            twits.add("@" + status.getUser().getScreenName() + ":" + status.getText());
-        }
-
-        for(WebSocket.Out<JsonNode> channel: members.values()) {
-            channel.write(event);
-            event.put("message", "@" + twits);
-        }
-    }
-
     private void komoran(Talk talk) {
         String text = "";
         List<List<Pair<String,String>>> result = Chat.analyzer.analyze(talk.text);
 
         for (List<Pair<String, String>> eojeolResult : result) {
             for (Pair<String, String> wordMorph : eojeolResult) {
-                Logger.debug(wordMorph.toString());
                 text+=wordMorph.toString();
             }
         }
@@ -184,60 +150,18 @@ public class ChatRoom extends UntypedActor {
     }
 
     private void analysisMessage(Talk talk) {
-        String message = "";
-        Boolean video = false;
-
-        if(talk.text.contains("아르바이트")) {
-            message = "part-time-job";
-        }
-        else if(talk.text.contains("랄라스윗") || talk.text.contains("제이래빗") || talk.text.contains("소란")) {
-            message = "singer";
-        }
-        else if(talk.text.contains("미국")) {
-            message = "usa-1";
-        }
-        else if(talk.text.contains("뉴욕") && talk.text.contains("LA")) {
-            message = "usa-2";
-        }
-        else if(talk.text.contains("소녀시대") && talk.text.contains("콘서트")) {
-            message = "girls-generation";
-            video = true;
-        }
-        else if(talk.text.contains("워싱턴 DC") && talk.text.contains("백악관")) {
-            message = "usa-3";
-        }
-        else if(talk.text.contains("유럽") && talk.text.contains("15박 16일")) {
-            message = "europe-1";
-        }
-        else if(talk.text.contains("대관람차") && talk.text.contains("빅벤")) {
-            message = "europe-2";
-        }
-        else if(talk.text.contains("오스트리아") && talk.text.contains("쉔부른")) {
-            message = "europe-3";
-        }
-        else if(talk.text.contains("프랑스") && talk.text.contains("루브르")) {
-            message = "europe-4";
-        }
-        else if(talk.text.contains("스위스") && talk.text.contains("융프라우")) {
-            message = "europe-5";
-        }
-        else if(talk.text.contains("코스북")) {
-            message = "europe-6";
-        }
-        else {
-            return;
-        }
+        Logger.debug(talk.text);
 
         for(WebSocket.Out<JsonNode> channel: members.values()) {
             ObjectNode event = Json.newObject();
             event.put("kind", "alert");
-            event.put("user", talk.username);
-            event.put("message", message);
-            event.put("video", video);
+            event.put("message", talk.text);
 
             channel.write(event);
         }
     }
+
+
 
     // Send a Json event to all members
     public void notifyAll(String kind, String user, String text) {

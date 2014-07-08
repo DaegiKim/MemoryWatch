@@ -1,7 +1,7 @@
 package models.chat;
 
 import akka.actor.ActorRef;
-import org.codehaus.jackson.JsonNode;
+import com.fasterxml.jackson.databind.JsonNode;
 import play.Logger;
 import play.libs.Akka;
 import play.libs.Json;
@@ -26,7 +26,7 @@ public class Robot {
         };
 
         // Join the room
-        chatRoom.tell(new ChatRoom.Join("Robot", robotChannel));
+        chatRoom.tell(new ChatRoom.Join("Robot", robotChannel), null);
 
         // Make the robot talk every 30 seconds
         Akka.system().scheduler().schedule(
@@ -34,7 +34,8 @@ public class Robot {
                 Duration.create(30, SECONDS),
                 chatRoom,
                 new ChatRoom.Talk("Robot", "I'm still alive"),
-                Akka.system().dispatcher()
+                Akka.system().dispatcher(),
+                null
         );
 
     }

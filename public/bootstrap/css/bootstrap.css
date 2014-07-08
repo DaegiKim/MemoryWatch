@@ -4269,7 +4269,7 @@ select[multiple].input-group-sm > .input-group-btn > .btn {
     text-align: center;
     white-space: nowrap;
     vertical-align: baseline;
-    border-radius: .25em;
+    /*border-radius: .25em;*/
 }
 .label[href]:hover,
 .label[href]:focus {

@@ -1,16 +1,14 @@
 package controllers;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import kr.co.shineware.nlp.komoran.core.MorphologyAnalyzer;
 import models.chat.ChatRoom;
-import org.codehaus.jackson.JsonNode;
 import play.Logger;
+import play.libs.Json;
 import play.mvc.Controller;
 import play.mvc.Result;
 import play.mvc.WebSocket;
-import twitter4j.Twitter;
-import twitter4j.TwitterException;
-import twitter4j.TwitterFactory;
-import twitter4j.conf.ConfigurationBuilder;
+import services.NLTK;
 import views.html.chat.chatRoom;
 import views.html.chat.index;
 
@@ -31,6 +29,12 @@ public class Chat extends Controller {
         Logger.debug("@@채팅방입장");
 
         return ok(chatRoom.render(username));
+    }
+
+    public static Result nltk(String text) {
+        String result = NLTK.nltkRequest(text);
+
+        return ok(Json.toJson(result));
     }
 
     /**

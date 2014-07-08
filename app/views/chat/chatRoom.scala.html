@@ -28,16 +28,15 @@
                     <div class="panel-body">
                     </div>
                 </div>
-                <div class="panel panel-default" id="twitter">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">트위터</h3>
-                    </div>
-                    <div class="panel-body">
-                    </div>
+            </div>
+            <div class="col-sm-8">
+                <div id="contents">
+
+                </div>
+                <div id="twitter">
+
                 </div>
             </div>
-            @concept.scenario1(username)
-            @concept.scenario2(username)
         </div>
     </div>
 
@@ -78,22 +77,11 @@
 
             // Create the message element
             if(data.kind == 'alert') {
-                $('.recommendation' ).css('display', 'none');
-                $('#'+data.message).fadeIn(500);
-
-                if(data.video = true) {
-                    $('div.recommendation > video.bg-video' ).each(function(index, value){
-                        $(this ).get(0 ).pause();
-                    });
-                    $('div#'+data.message+' > video.bg-video' ).get(0 ).play();
-                }
+                $("#contents").load("/partial_contents/"+data.message);
+                $("#twitter").load("/partial_tweets/"+data.message);
             }
             else if (data.kind == 'komoran') {
                 $('#komoran .panel-body' ).text(data.message);
-            }
-            else if (data.kind == 'twitter') {
-                $('#twitter .panel-body' ).text(data.message);
-                console.log(data);
             }
             else {
                 var el = $('<div class="message"><span></span><p></p></div>')

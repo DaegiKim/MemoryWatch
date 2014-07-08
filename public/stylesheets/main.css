@@ -49,3 +49,11 @@ div.alert-iSX {
 img.media {
     max-height: 32px;
 }
+
+div.panel.tweets {
+    margin-top: 1em;
+}
+
+div.profile-image img {
+    margin-right: 1em;
+}

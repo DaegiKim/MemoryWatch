@@ -2,6 +2,7 @@ package models;
 
 import com.google.common.io.Files;
 import com.mongodb.BasicDBObject;
+import net.vz.mongodb.jackson.DBCursor;
 import net.vz.mongodb.jackson.JacksonDBCollection;
 import net.vz.mongodb.jackson.ObjectId;
 import net.vz.mongodb.jackson.Id;
@@ -43,5 +44,10 @@ public class Media {
     public static Media findById(String id) {
         Media media = Media.coll.findOneById(id);
         return media;
+    }
+
+    public static List<Media> findByKeyword(String keyword) {
+        DBCursor<Media> cursor = Media.coll.find(new BasicDBObject("keyword", keyword));
+        return cursor.toArray();
     }
 }
