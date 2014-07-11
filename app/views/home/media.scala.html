@@ -9,12 +9,14 @@
             <tr>
                 <th>id</th>
                 <th>keyword</th>
+                <th>type</th>
                 <th>contents</th>
             </tr>
         @for(m <- Media.all()) {
             <tr>
                 <td>@m.id</td>
                 <td>@m.keyword</td>
+                <td>@(m.`type`)</td>
                 <td><img src="@routes.Home.contents(m.id)" class="img-rounded media"/></td>
             </tr>
         }

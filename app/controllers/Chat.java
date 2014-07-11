@@ -13,7 +13,6 @@ import views.html.chat.chatRoom;
 import views.html.chat.index;
 
 public class Chat extends Controller {
-    public static MorphologyAnalyzer analyzer = new MorphologyAnalyzer("data/");
 
     /**
      * Display the home page.

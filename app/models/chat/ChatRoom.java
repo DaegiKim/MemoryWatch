@@ -7,11 +7,10 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import controllers.Chat;
+import controllers.Home;
+import controllers.routes;
 import kr.co.shineware.util.common.model.Pair;
-import org.apache.http.*;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
+import models.Media;
 import play.Logger;
 import play.libs.Akka;
 import play.libs.F;
@@ -19,12 +18,8 @@ import play.libs.Json;
 import play.mvc.WebSocket;
 import scala.concurrent.Await;
 import scala.concurrent.duration.Duration;
-import twitter4j.*;
+import services.Komoran;
 
-import java.io.*;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -46,7 +41,7 @@ public class ChatRoom extends UntypedActor {
     }
 
     /**
-     * Join the default room.
+     * 채팅방 입장
      */
     public static void join(final String username, WebSocket.In<JsonNode> in, WebSocket.Out<JsonNode> out) throws Exception{
         // Send the Join message to the room
@@ -112,10 +107,9 @@ public class ChatRoom extends UntypedActor {
             Talk talk = (Talk)message;
 
             notifyAll("talk", talk.username, talk.text);
-            analysisMessage(talk);
-            komoran(talk);
+            response(talk);
 
-        } else if(message instanceof Quit)  {
+        }  else if(message instanceof Quit)  {
 
             // Received a Quit message
             Quit quit = (Quit)message;
@@ -130,38 +124,25 @@ public class ChatRoom extends UntypedActor {
 
     }
 
-    private void komoran(Talk talk) {
-        String text = "";
-        List<List<Pair<String,String>>> result = Chat.analyzer.analyze(talk.text);
+    private void response(Talk talk) {
+        Pair<List<Media>, Map<String, String>> response = Media.findByTalk(talk);
 
-        for (List<Pair<String, String>> eojeolResult : result) {
-            for (Pair<String, String> wordMorph : eojeolResult) {
-                text+=wordMorph.toString();
+        for(WebSocket.Out<JsonNode> channel: members.values()) {
+            ObjectNode event = Json.newObject();
+            event.put("kind", "response");
+
+            ArrayNode mediaArrayNode = event.putArray("media");
+            for(Media m : response.getFirst()) {
+                ObjectNode media = Json.newObject();
+                media.put("keyword", m.keyword);
+                media.put("type", m.type);
+                media.put("url", routes.Home.contents(m.id).url());
+
+                mediaArrayNode.add(media);
             }
-        }
-
-        for(WebSocket.Out<JsonNode> channel: members.values()) {
-            ObjectNode event = Json.newObject();
-            event.put("kind", "komoran");
-            event.put("message", text);
-
             channel.write(event);
         }
     }
-
-    private void analysisMessage(Talk talk) {
-        Logger.debug(talk.text);
-
-        for(WebSocket.Out<JsonNode> channel: members.values()) {
-            ObjectNode event = Json.newObject();
-            event.put("kind", "alert");
-            event.put("message", talk.text);
-
-            channel.write(event);
-        }
-    }
-
-
 
     // Send a Json event to all members
     public void notifyAll(String kind, String user, String text) {
@@ -181,6 +162,9 @@ public class ChatRoom extends UntypedActor {
         }
     }
 
+    /**
+     * 채팅방 입장
+     */
     public static class Join {
 
         final String username;
@@ -193,10 +177,13 @@ public class ChatRoom extends UntypedActor {
 
     }
 
+    /**
+     * 대화 메시지
+     */
     public static class Talk {
 
-        final String username;
-        final String text;
+        public final String username;
+        public final String text;
 
         public Talk(String username, String text) {
             this.username = username;
@@ -205,6 +192,9 @@ public class ChatRoom extends UntypedActor {
 
     }
 
+    /**
+     * 채팅방 퇴장
+     */
     public static class Quit {
 
         final String username;
