@@ -2,7 +2,11 @@ package models;
 
 import com.google.common.io.Files;
 import com.mongodb.BasicDBObject;
-import controllers.Chat;
+import com.mongodb.DB;
+import com.mongodb.DBObject;
+import com.mongodb.gridfs.GridFS;
+import com.mongodb.gridfs.GridFSDBFile;
+import com.mongodb.gridfs.GridFSInputFile;
 import kr.co.shineware.util.common.model.Pair;
 import models.chat.ChatRoom;
 import net.vz.mongodb.jackson.DBCursor;
@@ -10,51 +14,70 @@ import net.vz.mongodb.jackson.JacksonDBCollection;
 import net.vz.mongodb.jackson.ObjectId;
 import net.vz.mongodb.jackson.Id;
 import play.Logger;
+import play.api.mvc.MultipartFormData;
 import play.modules.mongodb.jackson.MongoDB;
-import play.mvc.Result;
+import play.mvc.Http;
 import services.Komoran;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URLConnection;
 import java.util.*;
 import java.util.regex.Pattern;
-
-import static play.mvc.Results.ok;
 
 public class Media {
     private static JacksonDBCollection<Media, String> coll = MongoDB.getCollection("media", Media.class, String.class);
 
     @Id
     @ObjectId
-    public String id;              //MongoDB Object ID
-    public String keyword;         //키워드
-    public String type;         //키워드
-    public byte[] contents;        //컨텐츠
+    public String id;               //MongoDB Object ID
+    public String keyword;          //키워드
+    public String type;             //키워드
 
-    public static Media createMedia(Media m, File f) {
-        Media media = new Media();
-        media.keyword = m.keyword;
+    public static boolean createMedia(Media m, Http.MultipartFormData.FilePart filePart) {
+        DB db = coll.getDB();
 
+        GridFS gridfs = new GridFS(db, "media");
+        GridFSInputFile gfsFile = null;
         try {
-            String type = f.toURI().toURL().openConnection().getContentType();
-            media.type = type;
-            Logger.debug(type);
+            gfsFile = gridfs.createFile(filePart.getFile());
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        try {
-            media.contents = Files.toByteArray(f);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        Media.coll.save(media);
+        gfsFile.setFilename(m.keyword);
 
-        return media;
+        String type = filePart.getContentType();
+        gfsFile.setContentType(type);
+
+        gfsFile.save();
+
+        return true;
     }
 
     public static List<Media> all() {
-        return Media.coll.find().toArray();
+        List<Media> mediaList = new ArrayList<>();
+
+        GridFS gfsPhoto = new GridFS(coll.getDB(), "media");
+        com.mongodb.DBCursor fileList = gfsPhoto.getFileList();
+
+        for(DBObject object : fileList) {
+            Media media = new Media();
+            media.id = object.get("_id").toString();
+            media.keyword = object.get("filename").toString();
+            media.type = object.get("contentType").toString();
+
+            mediaList.add(media);
+        }
+        return mediaList;
+    }
+
+    public static GridFSDBFile getFile(String id) {
+        GridFS gfs = new GridFS(coll.getDB(), "media");
+        GridFSDBFile file = gfs.find(new org.bson.types.ObjectId(id));
+
+        return file;
     }
 
     public static Media findById(String id) {
@@ -84,9 +107,21 @@ public class Media {
     }
 
     public static List<Media> findByKeyword(String keyword) {
+        List<Media> mediaList = new ArrayList<>();
         //db.coll.find({a:{$in:[1,2,3,5]})
+        GridFS gfs = new GridFS(coll.getDB(), "media");
+        List<GridFSDBFile> gridFSDBFiles = gfs.find(new BasicDBObject("filename", Pattern.compile(keyword)));
 
-        DBCursor<Media> cursor = Media.coll.find(new BasicDBObject("keyword", Pattern.compile(keyword)));
-        return cursor.toArray();
+
+        for(GridFSDBFile gridFSDBFile : gridFSDBFiles) {
+            Media media = new Media();
+            media.id = gridFSDBFile.getId().toString();
+            media.keyword = gridFSDBFile.getFilename();
+            media.type = gridFSDBFile.getContentType();
+
+            mediaList.add(media);
+        }
+
+        return mediaList;
     }
 }

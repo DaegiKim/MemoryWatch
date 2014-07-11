@@ -1,6 +1,8 @@
 package controllers;
 
+import com.mongodb.gridfs.GridFSDBFile;
 import models.Media;
+import play.Logger;
 import play.data.Form;
 import play.mvc.Controller;
 import play.mvc.Http;
@@ -25,9 +27,9 @@ public class Home extends Controller {
     }
 
     public static Result contents(String id) {
-        final Media media = Media.findById(id);
-        if(media == null) return notFound();
-        return ok(media.contents).as(media.type);
+        GridFSDBFile file = Media.getFile(id);
+
+        return ok(file.getInputStream()).as(file.getContentType());
     }
 
     public static Result save() {
@@ -40,7 +42,7 @@ public class Home extends Controller {
             Http.MultipartFormData.FilePart part = body.getFile("contents");
 
             if(part != null) {
-                Media.createMedia(filledForm.get(), part.getFile());
+                Media.createMedia(filledForm.get(), part);
             }
         }
 

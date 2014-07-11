@@ -25,8 +25,6 @@ public class Chat extends Controller {
      * Display the chat room.
      */
     public static Result chatRoom(String username) {
-        Logger.debug("@@채팅방입장");
-
         return ok(chatRoom.render(username));
     }
 
@@ -40,7 +38,6 @@ public class Chat extends Controller {
      * Handle the chat websocket.
      */
     public static WebSocket<JsonNode> chat(final String username) {
-        Logger.debug("@@@채팅방입장");
         return new WebSocket<JsonNode>() {
 
             // Called when the Websocket Handshake is done.

@@ -17,7 +17,16 @@
                 <td>@m.id</td>
                 <td>@m.keyword</td>
                 <td>@(m.`type`)</td>
-                <td><img src="@routes.Home.contents(m.id)" class="img-rounded media"/></td>
+                <td>
+                    @if(m.`type`.contains("image")) {
+                        <img src="@routes.Home.contents(m.id)" class="img-rounded media"/>
+                    }
+                    @if(m.`type`.contains("video")) {
+                        <video width="420" controls>
+                            <source src="@routes.Home.contents(m.id)" type="@(m.`type`)">
+                        </video>
+                    }
+                </td>
             </tr>
         }
         </table>
