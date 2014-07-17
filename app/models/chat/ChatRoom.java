@@ -48,8 +48,13 @@ public class ChatRoom extends UntypedActor {
             in.onMessage(new F.Callback<JsonNode>() {
                 public void invoke(JsonNode event) {
 
-                    // Send a Talk message to the room.
-                    defaultRoom.tell(new Talk(username, event.get("text").asText()), null);
+                    if(event.has("to")) {
+                        defaultRoom.tell(new Message(event.get("to").asText(), username, event.get("text").asText()), null);
+                    }
+                    else {
+                        // Send a Talk message to the room.
+                        defaultRoom.tell(new Talk(username, event.get("text").asText()), null);
+                    }
 
                 }
             });
@@ -104,7 +109,12 @@ public class ChatRoom extends UntypedActor {
             notifyAll("talk", talk.username, talk.text);
             response(talk);
 
-        }  else if(message instanceof Quit)  {
+        } else if(message instanceof Message) {
+
+            Message m = (Message)message;
+            notifyMessage(m);
+
+        } else if(message instanceof Quit)  {
 
             // Received a Quit message
             Quit quit = (Quit)message;
@@ -157,9 +167,20 @@ public class ChatRoom extends UntypedActor {
         }
     }
 
-    /**
-     * 채팅방 입장
-     */
+    public void notifyMessage(Message message) {
+        WebSocket.Out<JsonNode> jsonNodeOut = members.get(message.to);
+
+        ObjectNode event = Json.newObject();
+        event.put("to", message.to);
+        event.put("from", message.from);
+        event.put("text", message.text);
+
+        jsonNodeOut.write(event);
+    }
+
+        /**
+         * 채팅방 입장
+         */
     public static class Join {
 
         final String username;
@@ -198,6 +219,18 @@ public class ChatRoom extends UntypedActor {
             this.username = username;
         }
 
+    }
+
+    public static class Message {
+        final String to;
+        final String from;
+        final String text;
+
+        public Message(String to, String from, String text) {
+            this.to = to;
+            this.from = from;
+            this.text = text;
+        }
     }
 
 }
