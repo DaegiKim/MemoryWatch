@@ -168,14 +168,16 @@ public class ChatRoom extends UntypedActor {
     }
 
     public void notifyMessage(Message message) {
-        WebSocket.Out<JsonNode> jsonNodeOut = members.get(message.to);
+        if(members.containsKey(message.to)) {
+            WebSocket.Out<JsonNode> jsonNodeOut = members.get(message.to);
 
-        ObjectNode event = Json.newObject();
-        event.put("to", message.to);
-        event.put("from", message.from);
-        event.put("text", message.text);
+            ObjectNode event = Json.newObject();
+            event.put("to", message.to);
+            event.put("from", message.from);
+            event.put("text", message.text);
 
-        jsonNodeOut.write(event);
+            jsonNodeOut.write(event);
+        }
     }
 
         /**
