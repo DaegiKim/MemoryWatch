@@ -5,30 +5,49 @@
         <div class="page-header">
             <h1>MemoryWatch</h1>
         </div>
-        <table class="table">
+        <table class="ui inverted table segment">
             <tr>
                 <th>id</th>
                 <th>keyword</th>
                 <th>type</th>
                 <th>contents</th>
+                <th>remove</th>
             </tr>
         @for(m <- Media.all()) {
             <tr>
                 <td>@m.id</td>
-                <td>@m.keyword</td>
-                <td>@(m.`type`)</td>
                 <td>
-                    @if(m.`type`.contains("image")) {
-                        <img src="@routes.Home.contents(m.id)" class="img-rounded media"/>
-                    }
+                @for(tag <- m.keyword) {
+                    <div class="ui red label huge">@tag</div>
+                }
+                <td>
                     @if(m.`type`.contains("video")) {
-                        <video width="420" controls>
-                            <source src="@routes.Home.contents(m.id)" type="@(m.`type`)">
-                        </video>
+                        <i class="video icon big white"></i>
                     }
+                    @if(m.`type`.contains("image")) {
+                        <i class="photo icon big white"></i>
+                    }
+                </td>
+                <td>
+                    <div class="ui blue button" onclick="view('@m.id');">
+                        <i class="unhide icon"></i>
+                        VIEW
+                    </div>
+                </td>
+                <td>
+                    <a href="@routes.Home.delete(m.id)" class="ui red button">
+                        <i class="icon trash"></i>
+                        REMOVE
+                    </a>
                 </td>
             </tr>
         }
         </table>
     </div>
 }
+
+<script>
+    function view(id) {
+        window.open("/media/"+id);
+    }
+</script>

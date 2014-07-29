@@ -3,16 +3,17 @@
 # ~~~~
 
 # Home page
-GET         /                                 controllers.Home.index()
-GET         /upload                           controllers.Home.upload()
-POST        /upload                           controllers.Home.save()
-GET         /media                            controllers.Home.media()
-GET         /media/:id                        controllers.Home.contents(id:  String)
+GET         /                    controllers.Home.index()
+GET         /upload              controllers.Home.upload()
+POST        /upload              controllers.Home.save()
+GET         /media               controllers.Home.media()
+GET         /media/:id           controllers.Home.contents(id)
+GET         /media/delete/:id    controllers.Home.delete(id)
 
-GET         /chat                             controllers.Chat.index
-GET         /chat/room                        controllers.Chat.chatRoom(u: String ?= null)
-GET         /chat/join                        controllers.Chat.chat(u)
-GET         /chat/nltk                        controllers.Chat.nltk(text: String)
+GET         /chat                controllers.Chat.index
+GET         /chat/room           controllers.Chat.chatRoom(u?=null)
+GET         /chat/join           controllers.Chat.chat(u)
+GET         /chat/nltk           controllers.Chat.nltk(text)
 
 # Map static resources from the /public folder to the /assets URL path
-GET         /assets/*file                     controllers.Assets.at(path="/public", file)
+GET         /assets/*file        controllers.Assets.at(path="/public", file)

@@ -7,6 +7,8 @@ html {
 body {
     /* Margin bottom by footer height */
     margin: 0 0 60px;
+    background-color: #202020;
+    color: #fff;
 }
 #footer {
     position: absolute;
@@ -14,7 +16,7 @@ body {
     width: 100%;
     /* Set the fixed height of the footer here */
     height: 60px;
-    background-color: rgba(190,190,190,.2);
+    background-color: #000;
 }
 
 
@@ -56,4 +58,28 @@ div.panel.tweets {
 
 div.profile-image img {
     margin-right: 1em;
+}
+div.item {
+    text-align: center;
+    padding: 1em;
+    margin-right: 1em;
+    margin-bottom: 1em;
+    width: 150px;
+    display: inline-block;
+    border: 1px solid #555;
+}
+div.item > img {
+    width: 100%;
+}
+div.item > .rating {
+    margin-top: 1em;
+    font-size: 1em;
+}
+div#message, div#response {
+    white-space: pre;
+    border: 1px solid #555;
+    padding: 1em;
+    color: #ddd;
+    font-size: 10px;
+    font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
 }

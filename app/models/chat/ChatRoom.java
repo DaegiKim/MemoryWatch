@@ -139,7 +139,7 @@ public class ChatRoom extends UntypedActor {
             ArrayNode mediaArrayNode = event.putArray("media");
             for(Media m : response.getFirst()) {
                 ObjectNode media = Json.newObject();
-                media.put("keyword", m.keyword);
+                media.put("keyword", Json.toJson(m.keyword));
                 media.put("type", m.type);
                 media.put("url", routes.Home.contents(m.id).url());
 
@@ -180,9 +180,9 @@ public class ChatRoom extends UntypedActor {
         }
     }
 
-        /**
-         * 채팅방 입장
-         */
+    /**
+     * 채팅방 입장
+     */
     public static class Join {
 
         final String username;

@@ -5,7 +5,7 @@
     <div class="container">
         <div class="page-header">
             <div><h1>MemoryWatch <span class="glyphicon glyphicon-comment"></span></h1></div>
-            <div class="pull-right"><span class="glyphicon glyphicon-user"></span><span id="user-count"></span></div>
+            <div class="pull-right"><i class="user icon"></i><span id="user-count"></span></div>
             <div class="clearfix"></div>
         </div>
         <div class="row">
@@ -17,18 +17,32 @@
                     <div id="onChat">
                         <div class="chat-inner-wrapper">
                             <div id="messages"></div>
-                            <input type="text" id="talk" placeholder="여기에 글을 입력하세요" autofocus="on"/>
+                            <div class="ui left icon input fluid">
+                                <input type="text" id="talk" placeholder="여기에 글을 입력하세요" autofocus="on"/>
+                                <i class="horizontally flipped chat outline icon" style="color: #fff"></i>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
             <div class="col-sm-8">
-                <pre id="message">
-                </pre>
-                <pre id="response">
-                </pre>
+                <div id="recommend">
+
+                </div>
             </div>
         </div>
+        <div style="margin: 2em;"></div>
+        <div class="row">
+            <div class="col-sm-6">
+                <div id="response">
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <div id="message">
+                </div>
+            </div>
+        </div>
+        <div style="margin: 2em;"></div>
     </div>
 
     <script type="text/javascript" charset="utf-8">
@@ -43,6 +57,7 @@
         var WS = window['MozWebSocket'] ? MozWebSocket : WebSocket
         var chatSocket = new WS("@routes.Chat.chat(username).webSocketURL(request)")
 
+        //메시지 보내기
         var sendMessage = function() {
             if($("#talk").val().length > 0) {
                 chatSocket.send(JSON.stringify(
@@ -52,6 +67,7 @@
             }
         }
 
+        //메시지 받기
         var receiveEvent = function(event) {
             var data = JSON.parse(event.data)
 
@@ -66,7 +82,39 @@
             }
 
             if (data.kind == 'response') {
+                $('div#recommend' ).html('');
+                $('div#recommend' ).hide();
                 console.log(data);
+
+                //각 media 객체에 대해서
+                jQuery.each(data.media, function(i, val) {
+                    var item = $("<div></div>")
+                        .addClass("item");
+                    var rating = $(
+                        "<div class=\"ui huge heart rating\">" +
+                            "<i class=\"icon black\"></i>" +
+                            "<i class=\"icon black\"></i>" +
+                            "<i class=\"icon black\"></i>" +
+                            "<i class=\"icon black\"></i>" +
+                            "<i class=\"icon black\"></i>" +
+                        "</div>"
+                    );
+
+                    if(val.type.indexOf("image")>-1) {
+                        var img = $("<img src=\""+val.url+"\">");
+                        item.append(img);
+                        item.append(rating);
+
+                        $('div#recommend').prepend(item)
+                        $('.ui.rating').rating();
+                    }
+                    else if(val.type.indexOf("video")>-1) {
+
+                    }
+                });
+
+                $('div#recommend' ).fadeIn('slow');
+
                 $("#response" ).text(JSON.stringify(data,null,"\t"));
             }
             else {

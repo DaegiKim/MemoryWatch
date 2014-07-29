@@ -1,8 +1,7 @@
 div.chat-wrapper {
     color: #ddd;
     padding: 1em 1em 1em 1em;
-    border: 1px solid #ddd;
-    background-color: rgba(255,255,255,.95);
+    border: 1px solid #555;
 }
 div.chat-inner-wrapper {
     min-height: 400px;
@@ -14,7 +13,7 @@ div.chat-inner-wrapper {
 }
 
 #messages {
-    color: #202020;
+    color: #ddd;
     text-align: left;
     position: absolute;
     width: 100%;
@@ -23,21 +22,21 @@ div.chat-inner-wrapper {
 }
 
 #talk {
-    position: absolute;
     bottom: 0;
     left: 0;
     width: 100%;
     border: 1px solid #ddd;
     background-color: transparent;
     padding: .5em .5em .5em .5em;
-    color: #202020;
+    color: #ddd;
+    border-radius: 0;
 }
 #talk:focus {
     outline: none;
 }
 
 .message {
-    color: #202020;
+    color: #ddd;
     padding: 4px 0;
     position: relative;
     /*border-bottom: 1px solid #ddd;*/
@@ -65,7 +64,7 @@ div.chat-inner-wrapper {
 }
 
 .message.join, .message.quit {
-    color: #202030;
+    color: #ddd;
 }
 #messages {
     top: 0 !important;

@@ -9,15 +9,15 @@
         </div>
         <p class="lead">새로운 키워드와 컨텐츠를 업로드 할 수 있습니다.</p>
         @helper.form(action = routes.Home.save(), 'role -> "form", 'enctype -> "multipart/form-data") {
-            <div class="form-group">
-                <label for="keyword">키워드</label>
-                <input type="text" class="form-control" id="keyword" name="keyword" required>
+            <div class="form-group ui fluid left icon input">
+                <input type="text" placeholder="키워드를 입력하세요" id="keyword" name="keyword" required>
+                <i class="tags icon"></i>
             </div>
-            <div class="form-group">
-                <label for="contents">컨텐츠</label>
+            <div class="form-group ui fluid left icon input">
                 <input type="file" class="form-control" id="contents" name="contents" placeholder="컨텐츠를 선택하세요" required>
+                <i class="file icon"></i>
             </div>
-            <button type="submit" class="btn btn-default">Submit</button>
+            <button type="submit" class="pull-right ui button black big">Submit</button>
         }
     </div>
 }

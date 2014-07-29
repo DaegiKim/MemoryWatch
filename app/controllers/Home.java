@@ -42,9 +42,16 @@ public class Home extends Controller {
             Http.MultipartFormData.FilePart part = body.getFile("contents");
 
             if(part != null) {
-                Media.createMedia(filledForm.get(), part);
+                Media.save(filledForm.data().get("keyword"), part);
             }
         }
+
+        return redirect(routes.Home.media());
+    }
+
+    public static Result delete(String id) {
+        Logger.debug(id);
+        Media.remove(id);
 
         return redirect(routes.Home.media());
     }

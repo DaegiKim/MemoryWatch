@@ -1,6 +1,5 @@
 package models;
 
-import com.google.common.io.Files;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
 import com.mongodb.DBObject;
@@ -9,22 +8,16 @@ import com.mongodb.gridfs.GridFSDBFile;
 import com.mongodb.gridfs.GridFSInputFile;
 import kr.co.shineware.util.common.model.Pair;
 import models.chat.ChatRoom;
-import net.vz.mongodb.jackson.DBCursor;
 import net.vz.mongodb.jackson.JacksonDBCollection;
 import net.vz.mongodb.jackson.ObjectId;
 import net.vz.mongodb.jackson.Id;
 import play.Logger;
-import play.api.mvc.MultipartFormData;
 import play.modules.mongodb.jackson.MongoDB;
 import play.mvc.Http;
 import services.Komoran;
 
-import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.URLConnection;
 import java.util.*;
-import java.util.regex.Pattern;
 
 public class Media {
     private static JacksonDBCollection<Media, String> coll = MongoDB.getCollection("media", Media.class, String.class);
@@ -32,10 +25,10 @@ public class Media {
     @Id
     @ObjectId
     public String id;               //MongoDB Object ID
-    public String keyword;          //키워드
+    public List<String> keyword;    //키워드
     public String type;             //키워드
 
-    public static boolean createMedia(Media m, Http.MultipartFormData.FilePart filePart) {
+    public static boolean save(String keyword, Http.MultipartFormData.FilePart filePart) {
         DB db = coll.getDB();
 
         GridFS gridfs = new GridFS(db, "media");
@@ -46,12 +39,22 @@ public class Media {
             e.printStackTrace();
         }
 
-        gfsFile.setFilename(m.keyword);
+        gfsFile.setFilename(filePart.getFilename());
+        gfsFile.setMetaData(new BasicDBObject("tags", keyword.replace(" ", "").split(",")));
 
         String type = filePart.getContentType();
         gfsFile.setContentType(type);
 
         gfsFile.save();
+
+        return true;
+    }
+
+    public static boolean remove(String id) {
+        DB db = coll.getDB();
+
+        GridFS gridfs = new GridFS(db, "media");
+        gridfs.remove(new org.bson.types.ObjectId(id));
 
         return true;
     }
@@ -65,7 +68,8 @@ public class Media {
         for(DBObject object : fileList) {
             Media media = new Media();
             media.id = object.get("_id").toString();
-            media.keyword = object.get("filename").toString();
+            DBObject metadata = (DBObject) object.get("metadata");
+            media.keyword = (List<String>) metadata.get("tags");
             media.type = object.get("contentType").toString();
 
             mediaList.add(media);
@@ -80,13 +84,9 @@ public class Media {
         return file;
     }
 
-    public static Media findById(String id) {
-        Media media = Media.coll.findOneById(id);
-        return media;
-    }
-
     public static Pair<List<Media>, Map<String, String>> findByTalk(ChatRoom.Talk talk) {
         Map<String, String> map = Komoran.analysis(talk);
+        Logger.debug(map.toString());
 
         Map<String, Media> mediaHashMap = new HashMap<>();
         List<Media> mediaList = new ArrayList<>();
@@ -110,13 +110,14 @@ public class Media {
         List<Media> mediaList = new ArrayList<>();
         //db.coll.find({a:{$in:[1,2,3,5]})
         GridFS gfs = new GridFS(coll.getDB(), "media");
-        List<GridFSDBFile> gridFSDBFiles = gfs.find(new BasicDBObject("filename", Pattern.compile(keyword)));
+        List<GridFSDBFile> gridFSDBFiles = gfs.find(new BasicDBObject("metadata.tags", keyword));
 
 
         for(GridFSDBFile gridFSDBFile : gridFSDBFiles) {
             Media media = new Media();
             media.id = gridFSDBFile.getId().toString();
-            media.keyword = gridFSDBFile.getFilename();
+            DBObject metadata = (DBObject) gridFSDBFile.get("metadata");
+            media.keyword = (List<String>) metadata.get("tags");
             media.type = gridFSDBFile.getContentType();
 
             mediaList.add(media);
