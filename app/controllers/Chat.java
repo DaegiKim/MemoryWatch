@@ -1,9 +1,7 @@
 package controllers;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import kr.co.shineware.nlp.komoran.core.MorphologyAnalyzer;
 import models.chat.ChatRoom;
-import play.Logger;
 import play.libs.Json;
 import play.mvc.Controller;
 import play.mvc.Result;
@@ -14,6 +12,7 @@ import views.html.chat.index;
 
 public class Chat extends Controller {
 
+    //testtest
 
     /**
      * Display the home page.
