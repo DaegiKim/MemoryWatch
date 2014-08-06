@@ -12,8 +12,6 @@ import views.html.chat.index;
 
 public class Chat extends Controller {
 
-    //t
-
     /**
      * Display the home page.
      */
